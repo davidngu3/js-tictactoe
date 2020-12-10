@@ -1,9 +1,22 @@
 .board {
+    width: 150px;
+    height: 150px;
     display: flex;
     flex-direction: column;
+    background: lavender;
+    border: 1px solid black;
+    margin: 100px;
 }
 
 .boardRow {
+    width: 150px;
+    height: 50px;
     display: flex;
     flex-direction: row;
+}
+
+.square {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
 }
