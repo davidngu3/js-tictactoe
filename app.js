@@ -2,10 +2,19 @@
 var tempbtn = document.getElementById('temprender');
 var boardContainer = document.getElementById('board-container');
 
+// gameController module, controls game flow
+var gameController = (function() {
+    var activePlayer = 1;
+
+    return {
+        activePlayer
+    };
+})();
+
 
 // gameboard module 
 var gameBoard = (function() {
-    var board = [['X', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]; // tic tac toe board
+    var board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]; // tic tac toe board
     
     var setMarker = function(row, col, marker) {
         board[row][col] = marker;
@@ -37,7 +46,17 @@ var displayController = (function() {
                 square.innerText = gameBoard.getMarker(i, j);
                 square.setAttribute('data-row', i);
                 square.setAttribute('data-col', j);
-                square.addEventListener('click', player.placeMarker);
+                square.addEventListener('click', () => {
+                    if (gameBoard.getMarker(i, j) == ' ') {
+                        if (gameBoard.activePlayer == 1) {
+                            playerOne.placeMarker(i, j);
+                        }
+                        else {
+                            playerTwo.placeMarker(i, j);
+                        }
+                        gameController.activePlayer = gameController.activePlayer == 1 ? 0 : 1;
+                    }
+                });
                 row.appendChild(square);
             }
             container.appendChild(row);
@@ -49,16 +68,16 @@ var displayController = (function() {
     };
 })();
 
+
 // player factory
 var player = function(n) {
     var score = 0;
     var playerNum = n;
 
-    var placeMarker = function(e) {
-        var xpos = e.target.getAttribute('data-row');
-        var ypos = e.target.getAttribute('data-col');
-        var marker = playerNum == n ? 'X' : 'O';
+    var placeMarker = function(xpos, ypos) {
+        var marker = gameController.activePlayer == 1 ? 'X' : 'O';
         gameBoard.setMarker(xpos, ypos, marker);
+        displayController.renderBoard();
     }
 
     return {
@@ -66,6 +85,9 @@ var player = function(n) {
         placeMarker
     };
 }
+
+playerOne = player(1);
+playerTwo = player(2);
 
 tempbtn.addEventListener('click', () => {
     displayController.renderBoard();
