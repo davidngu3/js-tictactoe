@@ -6,15 +6,31 @@ var boardContainer = document.getElementById('board-container');
 var gameController = (function() {
     var activePlayer = 1;
 
+    var getActivePlayer = function() {
+        return activePlayer;
+    }
+
+    var setActivePlayer = function(playerNum) {
+        activePlayer = playerNum;
+    }
+
+    var checkWin = function() {
+        if (gameBoard.checkBoard()) {
+            console.log('The winner is player ' + gameBoard.checkBoard());
+        }
+    }
+
     return {
-        activePlayer
+        getActivePlayer,
+        setActivePlayer,
+        checkWin
     };
 })();
 
 
 // gameboard module 
 var gameBoard = (function() {
-    var board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]; // tic tac toe board
+    var board = [['', '', ''], ['', '', ''], ['', '', '']]; // tic tac toe board
     
     var setMarker = function(row, col, marker) {
         board[row][col] = marker;
@@ -24,9 +40,36 @@ var gameBoard = (function() {
         return board[row][col];
     }
 
+    var checkBoard = function() {
+        // horizontal
+        for (let i = 0; i < 3; i++) {
+            if (board[i][0] && board[i][0] == board[i][1] && board[i][0] == board[i][2]) { // all 3 markers in row the same
+                return board[i][0]; // return marker
+            }
+        }
+
+        // vertical
+        for (let i = 0; i < 3; i++) {
+            if (board[0][i] && board[0][i] == board[1][i] && board[1][i] == board[2][i]) { // all 3 markers in column the same
+                return board[0][i];
+            }
+        }
+
+        // diagonal 
+        if (board[0][0] && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            return board[0][0];
+        }
+        if (board[0][2] && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            return board[0][2];
+        }
+
+        return null;
+    }
+
     return {
         setMarker,
-        getMarker
+        getMarker,
+        checkBoard
     };
 })();
 
@@ -47,14 +90,15 @@ var displayController = (function() {
                 square.setAttribute('data-row', i);
                 square.setAttribute('data-col', j);
                 square.addEventListener('click', () => {
-                    if (gameBoard.getMarker(i, j) == ' ') {
+                    if (gameBoard.getMarker(i, j) == '') {
                         if (gameBoard.activePlayer == 1) {
                             playerOne.placeMarker(i, j);
                         }
                         else {
                             playerTwo.placeMarker(i, j);
                         }
-                        gameController.activePlayer = gameController.activePlayer == 1 ? 0 : 1;
+                        var newActivePlayerNum = gameController.getActivePlayer() == 1 ? 0 : 1;
+                        gameController.setActivePlayer(newActivePlayerNum);
                     }
                 });
                 row.appendChild(square);
@@ -74,14 +118,18 @@ var player = function(n) {
     var score = 0;
     var playerNum = n;
 
+    var getScore = function() {
+        return score;
+    }
+
     var placeMarker = function(xpos, ypos) {
-        var marker = gameController.activePlayer == 1 ? 'X' : 'O';
-        gameBoard.setMarker(xpos, ypos, marker);
+        var newMarker = gameController.getActivePlayer() == 1 ? 'X' : 'O';
+        gameBoard.setMarker(xpos, ypos, newMarker);
         displayController.renderBoard();
     }
 
     return {
-        score,
+        getScore,
         placeMarker
     };
 }
