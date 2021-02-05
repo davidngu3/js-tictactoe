@@ -1,3 +1,11 @@
+// Author: David Nguyen
+// Last modified: 5/2/2021
+// Last action: Added gameController.checkWin, only manual activation at this point. 
+// Next, work on step 6: 
+// Probably will have to plan out the flow using pen and paper
+// Clean up UI and allow players to enter names, start/restart button and congratulations display box
+
+
 // DOM Elements
 var tempbtn = document.getElementById('temprender');
 var boardContainer = document.getElementById('board-container');
