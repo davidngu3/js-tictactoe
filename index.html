@@ -8,8 +8,21 @@
     </head>
 
     <body>
-        <button id="temprender">render</button>
+        <form id="playerNameForm">
+            <label for="player1NameInput">
+                Player 1: <input type="text" id="player1NameInput" placeholder="Enter Player 1 Name" required/>
+            </label>
+            
+            <label for="player2NameInput">
+                Player 2: <input type="text" id="player2NameInput" placeholder="Enter Player 2 Name" required/>
+            </label>
+
+            <button type="button" id="startButton">Start</button>
+        </form>
+        
+        
         <div id="board-container" class="board"></div>
+        <div id="outcomeLabel"></div>
         <script src="app.js"></script>
     </body>
 </html>

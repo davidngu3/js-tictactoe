@@ -1,9 +1,8 @@
 // Author: David Nguyen
-// Last modified: 5/2/2021
-// Last action: Added gameController.checkWin, only manual activation at this point. 
-// Next, work on step 6: 
-// Probably will have to plan out the flow using pen and paper
-// Clean up UI and allow players to enter names, start/restart button and congratulations display box
+// Last modified: 6/2/2021
+// Last action: Added congratulations display, reorganised code sections
+// Game skeleton is pretty much complete
+// Need to: Plan out game, Clean up UI
 
 // gameController module, controls game flow
 var gameController = (function() {
@@ -17,9 +16,14 @@ var gameController = (function() {
         activePlayer = playerNum;
     }
 
+    var displayWinner = function(winner) {
+        outcomeElement.innerText = `Player ${winner} is the winner!`;
+    }
+
     var checkWin = function() {
         if (gameBoard.checkBoard()) {
-            console.log('The winner is player ' + gameBoard.checkBoard());
+            let winner = gameBoard.checkBoard();
+            displayWinner(winner);
         }
     }
 
@@ -139,14 +143,23 @@ var player = function(n) {
 
 
 // DOM Elements
-var tempbtn = document.getElementById('temprender');
+var startBtn = document.getElementById('startButton');
 var boardContainer = document.getElementById('board-container');
+var outcomeElement = document.getElementById('outcomeLabel');
+
+var player1Field = document.getElementById('player1NameInput');
+var player2Field = document.getElementById('player2NameInput');
 
 // Set up players
 playerOne = player(1);
 playerTwo = player(2);
 
 // Button handlers
-tempbtn.addEventListener('click', () => {
-    displayController.renderBoard();
+startBtn.addEventListener('click', () => {
+    if (player1Field.value && player2Field.value) {
+        displayController.renderBoard();
+    }
+    else {
+        alert("Please enter player names");
+    }
 });

@@ -20,3 +20,9 @@
     height: 50px;
     border: 1px solid black;
 }
+
+#playerNameForm {
+    display: flex;
+    flex-direction: column;
+    background-color: aliceblue;
+}
