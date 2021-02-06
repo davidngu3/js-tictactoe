@@ -2,7 +2,8 @@
 // Last modified: 6/2/2021
 // Last action: Added congratulations display, reorganised code sections
 // Game skeleton is pretty much complete
-// Need to: Plan out game, Clean up UI
+// Need to: Add gamecontroller player stuff, add text divs showing which player it is, fix playernames on win
+// Clean up UI
 
 // gameController module, controls game flow
 var gameController = (function() {
