@@ -5,11 +5,6 @@
 // Probably will have to plan out the flow using pen and paper
 // Clean up UI and allow players to enter names, start/restart button and congratulations display box
 
-
-// DOM Elements
-var tempbtn = document.getElementById('temprender');
-var boardContainer = document.getElementById('board-container');
-
 // gameController module, controls game flow
 var gameController = (function() {
     var activePlayer = 1;
@@ -142,9 +137,16 @@ var player = function(n) {
     };
 }
 
+
+// DOM Elements
+var tempbtn = document.getElementById('temprender');
+var boardContainer = document.getElementById('board-container');
+
+// Set up players
 playerOne = player(1);
 playerTwo = player(2);
 
+// Button handlers
 tempbtn.addEventListener('click', () => {
     displayController.renderBoard();
 });
