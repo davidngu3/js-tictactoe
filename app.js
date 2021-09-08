@@ -1,7 +1,7 @@
 // Author: David Nguyen
-// Last modified: 7/2/2021
-// Last action: Added display to show whose turn it is
-// Need to: Disable board on win
+// Last modified: 8/9/21
+// Last action: Completed the game
+// Need to: Make it look nicer TM
 
 // gameController module, controls game flow
 var gameController = (function() {
@@ -24,27 +24,34 @@ var gameController = (function() {
         }
     }
 
-    var displayWinner = function() {
-        if (activePlayer == playerOne) {
-            outcomeElement.innerText = `Player ${playerTwo.getName()} wins!`;
+    var playTurn = function() {
+        if (gameBoard.checkBoardForWinner()) {
+            displayController.renderWinner();
+            gameBoard.disable();
+        }
+        else if (gameBoard.checkBoardForStalemate()) {
+            displayController.renderDraw();
+            gameBoard.disable();
         }
         else {
-            outcomeElement.innerText = `Player ${playerOne.getName()} wins!`;
+            gameController.switchActivePlayer();
+            displayController.renderTurn();
         }
     }
 
-    var displayTurn = function() {
-        outcomeElement.innerText = `Player ${activePlayer.getName()}'s turn`;
-    }
-
-    var checkResult = function() {
-        let winner = gameBoard.checkBoard();
-
-        if (winner) {
-            displayWinner();
+    var startGame = function() {
+        if (player1Field.value && player2Field.value) {
+            playerOne = player(player1Field.value, 'X')
+            playerTwo = player(player2Field.value, 'O');
+            gameController.setActivePlayer(playerOne);
+            gameBoard.clear();
+            gameBoard.enable();
+            displayController.createBoard();
+            displayController.renderBoard();
+            playTurn();
         }
         else {
-            displayTurn();
+            alert("Please enter player names");
         }
     }
 
@@ -52,15 +59,30 @@ var gameController = (function() {
         getActivePlayer,
         setActivePlayer,
         switchActivePlayer,
-        checkResult,
+        playTurn,
+        startGame
     };
 })();
 
 
 // gameboard module 
 var gameBoard = (function() {
+    var disabled = false;
+
     var board = [['', '', ''], ['', '', ''], ['', '', '']]; // tic tac toe board
     
+    var clear = function() {
+        board = [['', '', ''], ['', '', ''], ['', '', '']];
+    }
+
+    var enable = function() {
+        disabled = false;
+    }
+
+    var disable = function() {
+        disabled = true;
+    }
+
     var setMarker = function(row, col, marker) {
         board[row][col] = marker;
     } 
@@ -70,14 +92,13 @@ var gameBoard = (function() {
     }
 
     var boardClick = function(i, j) {
-        if (!board[i][j]) {
+        if (!board[i][j] && !disabled) {
             gameController.getActivePlayer().placeMarker(i, j);
-            gameController.switchActivePlayer();
-            gameController.checkResult();
+            gameController.playTurn();
         }
     }
 
-    var checkBoard = function() {
+    var checkBoardForWinner = function() {
         // horizontal
         if (board.some(row => row[0] && row.every(marker => marker === row[0]))) {
             return true;
@@ -101,37 +122,79 @@ var gameBoard = (function() {
         return false;
     }
 
+    var checkBoardForStalemate = function() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] == '') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     return {
         setMarker,
         getMarker,
-        checkBoard,
-        boardClick
+        checkBoardForWinner,
+        checkBoardForStalemate,
+        boardClick,
+        clear,
+        disable,
+        enable
     };
 })();
 
 
 // displayController module
 var displayController = (function() {
-    var renderBoard = function() {
+    var createBoard = function() {
         var container = document.getElementById('board-container');
         container.innerHTML = ""; // clear board
-        
+
         for (let i = 0; i < 3; i++) {
             var row = document.createElement('div'); 
             row.className = "boardRow";
             for (let j = 0; j < 3; j++) {
                 var square = document.createElement('div');
                 square.className = "square";
-                square.innerText = gameBoard.getMarker(i, j);
                 square.addEventListener('click', () => gameBoard.boardClick(i, j));
                 row.appendChild(square);
             }
             container.appendChild(row);
         }
+    }
+
+    var renderBoard = function() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                var selectedSquare = document.querySelector(`#board-container div:nth-child(${i+1}) div:nth-child(${j+1})`);
+                selectedSquare.innerText = gameBoard.getMarker(i, j);
+            }
+        }
     };
 
+    var renderWinner = function() {
+        var outcomeElement = document.getElementById('outcomeLabel');
+        outcomeElement.innerText = `Player ${gameController.getActivePlayer().getName()} wins!`
+    }
+
+    var renderDraw = function() {
+        var outcomeElement = document.getElementById('outcomeLabel');
+        outcomeElement.innerText = `Draw! Nobody Wins`
+    }
+
+    var renderTurn = function() {
+        var outcomeElement = document.getElementById('outcomeLabel');
+        outcomeElement.innerText = `Player ${gameController.getActivePlayer().getName()}'s turn`;
+    }
+
     return { 
-        renderBoard
+        renderBoard,
+        renderWinner,
+        renderDraw,
+        renderTurn,
+        createBoard
     };
 })();
 
@@ -160,7 +223,6 @@ var player = function(name, marker) {
 // DOM Elements
 var startBtn = document.getElementById('startButton');
 var boardContainer = document.getElementById('board-container');
-var outcomeElement = document.getElementById('outcomeLabel');
 
 var player1Field = document.getElementById('player1NameInput');
 var player2Field = document.getElementById('player2NameInput');
@@ -168,14 +230,5 @@ var player2Field = document.getElementById('player2NameInput');
 
 // Button handlers
 startBtn.addEventListener('click', () => {
-    if (player1Field.value && player2Field.value) {
-        playerOne = player(player1Field.value, 'X')
-        playerTwo = player(player2Field.value, 'O');
-        gameController.setActivePlayer(playerOne);
-        displayController.renderBoard();
-        gameController.checkResult();
-    }
-    else {
-        alert("Please enter player names");
-    }
+    gameController.startGame();
 });
