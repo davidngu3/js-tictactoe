@@ -23,7 +23,7 @@
 }
 
 #playerNameForm {
-    width: 500px;
+    width: 300px;
     display: flex;
     flex-direction: column;
     background-color: aliceblue;
